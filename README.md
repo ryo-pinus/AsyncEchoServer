@@ -1,5 +1,5 @@
 # AsyncEchoServer
-
+[![Build status](https://ci.appveyor.com/api/projects/status/7l9e4rfax6bpltob/branch/master?svg=true)](https://ci.appveyor.com/project/ryo-pinus/asyncechoserver/branch/master)
 [![Build Status](https://travis-ci.org/ryo-pinus/AsyncEchoServer.svg?branch=master)](https://travis-ci.org/ryo-pinus/AsyncEchoServer)
 
 ## 概要
