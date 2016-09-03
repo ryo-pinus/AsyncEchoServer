@@ -1,2 +1,2 @@
 language: csharp
-solution: AsyncEchoServer/solution-name.sln
+solution: AsyncEchoServer/AsyncEchoServer.sln
