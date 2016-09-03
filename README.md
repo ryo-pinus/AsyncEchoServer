@@ -1,5 +1,7 @@
 # AsyncEchoServer
 
+[![Build Status](https://travis-ci.org/ryo-pinus/AsyncEchoServer.svg?branch=master)](https://travis-ci.org/ryo-pinus/AsyncEchoServer)
+
 ## 概要
 
 AsyncEchoServerはC#で開発された非同期エコーサーバーとなります。
