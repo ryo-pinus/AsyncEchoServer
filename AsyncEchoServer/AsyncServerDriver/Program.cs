@@ -54,14 +54,8 @@ namespace AsyncServerDriver
 
         private static bool HasLf(byte[] buf, int count)
         {
-            for (int i = 0; i < count; i++)
-            {
-                if (buf[i] == 0xA)
-                {
-                    return true;
-                }
-            }
-            return false;
+            const byte LF = 0xA;
+            return buf.Take(count).FirstOrDefault(b => b == LF) == LF;
         }
     }
 }
