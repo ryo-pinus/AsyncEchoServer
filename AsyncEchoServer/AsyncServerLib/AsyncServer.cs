@@ -44,11 +44,11 @@ namespace AsyncServerLib
                         args.Completed += Args_Completed;
 
                         // クライアントの接続を受け入れる
-                        await AcceptAsync(args);
+                        await AcceptAsync(args).ConfigureAwait(false);
                     }
                     Thread.Sleep(1);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -84,17 +84,17 @@ namespace AsyncServerLib
             {
                 case SocketAsyncOperation.Accept:
                     WriteDebugLog("Accept", socketAsyncEventArgs);
-                    await OnAcceptCompleted(socketAsyncEventArgs);
+                    await OnAcceptCompleted(socketAsyncEventArgs).ConfigureAwait(false);
                     break;
 
                 case SocketAsyncOperation.Receive:
                     WriteDebugLog("Receive", socketAsyncEventArgs);
-                    await OnReceiveCompleted(socketAsyncEventArgs);
+                    await OnReceiveCompleted(socketAsyncEventArgs).ConfigureAwait(false);
                     break;
 
                 case SocketAsyncOperation.Send:
                     WriteDebugLog("Send", socketAsyncEventArgs);
-                    await OnSendCompleted(socketAsyncEventArgs);
+                    await OnSendCompleted(socketAsyncEventArgs).ConfigureAwait(false);
                     break;
                 default:
                     break;
@@ -118,8 +118,8 @@ namespace AsyncServerLib
             var serverEventArgs = new AsyncServerEventArgs(new byte[0], 0, 
                 socketAsyncEventArgs.BytesTransferred, LastAction.Accept, socketAsyncEventArgs.UserToken);
 
-            await RaiseServerEvent(serverEventArgs);
-            await Dispatch(serverEventArgs, socketAsyncEventArgs);
+            await RaiseServerEvent(serverEventArgs).ConfigureAwait(false);
+            await Dispatch(serverEventArgs, socketAsyncEventArgs).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -132,15 +132,15 @@ namespace AsyncServerLib
             if (socketAsyncEventArgs.SocketError != SocketError.Success)
             {
                 // 接続終了
-                await ShutdownAsync(socketAsyncEventArgs);
+                await ShutdownAsync(socketAsyncEventArgs).ConfigureAwait(false);
                 return;
             }
 
             var serverEventArgs = new AsyncServerEventArgs(socketAsyncEventArgs.Buffer, socketAsyncEventArgs.Count, 
                 socketAsyncEventArgs.BytesTransferred, LastAction.Receive, socketAsyncEventArgs.UserToken);
 
-            await RaiseServerEvent(serverEventArgs);
-            await Dispatch(serverEventArgs, socketAsyncEventArgs);
+            await RaiseServerEvent(serverEventArgs).ConfigureAwait(false);
+            await Dispatch(serverEventArgs, socketAsyncEventArgs).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace AsyncServerLib
             if (socketAsyncEventArgs.SocketError != SocketError.Success)
             {
                 // 接続終了
-                await ShutdownAsync(socketAsyncEventArgs);
+                await ShutdownAsync(socketAsyncEventArgs).ConfigureAwait(false);
                 return;
             }
 
@@ -162,8 +162,8 @@ namespace AsyncServerLib
             var serverEventArgs = new AsyncServerEventArgs(socketAsyncEventArgs.Buffer, socketAsyncEventArgs.Count, 
                 socketAsyncEventArgs.BytesTransferred, LastAction.Send, socketAsyncEventArgs.UserToken);
 
-            await RaiseServerEvent(serverEventArgs);
-            await Dispatch(serverEventArgs, socketAsyncEventArgs);
+            await RaiseServerEvent(serverEventArgs).ConfigureAwait(false);
+            await Dispatch(serverEventArgs, socketAsyncEventArgs).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace AsyncServerLib
         /// <returns>継続タスク。</returns>
         private async Task RaiseServerEvent(AsyncServerEventArgs e)
         {
-           await Task.Run(() => AsyncServerEvent?.Invoke(this, e));
+           await Task.Run(() => AsyncServerEvent?.Invoke(this, e)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -189,33 +189,33 @@ namespace AsyncServerLib
             {
                 case NextAction.Shutdown:
                     // 接続終了
-                    await ShutdownAsync(socketAsyncEventArgs);
+                    await ShutdownAsync(socketAsyncEventArgs).ConfigureAwait(false);
                     break;
                 case NextAction.Receive:
                     // 受信
                     try
                     {
                         SetBuffer(socketAsyncEventArgs);
-                        await ReceiveAsync(socketAsyncEventArgs);
+                        await ReceiveAsync(socketAsyncEventArgs).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
                         WriteDebugLog(ex.ToString());
                         // 接続終了
-                        await ShutdownAsync(socketAsyncEventArgs);
+                        await ShutdownAsync(socketAsyncEventArgs).ConfigureAwait(false);
                     }
                     break;
                 case NextAction.Send:
                     // 送信
                     try
                     {
-                        await SendAsync(socketAsyncEventArgs);
+                        await SendAsync(socketAsyncEventArgs).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
                         WriteDebugLog(ex.ToString());
                         // 接続終了
-                        await ShutdownAsync(socketAsyncEventArgs);
+                        await ShutdownAsync(socketAsyncEventArgs).ConfigureAwait(false);
                     }
                     break;
                 default:
@@ -230,7 +230,7 @@ namespace AsyncServerLib
         /// <returns>継続タスク。</returns>
         private async Task AcceptAsync(SocketAsyncEventArgs socketAsyncEventArgs)
         {
-            if (!await Task.FromResult<bool>(serverSocket_.AcceptAsync(socketAsyncEventArgs)))
+            if (!await Task.FromResult<bool>(serverSocket_.AcceptAsync(socketAsyncEventArgs)).ConfigureAwait(false))
             {
                 Args_Completed(this, socketAsyncEventArgs);
             }
@@ -243,7 +243,7 @@ namespace AsyncServerLib
         /// <returns>継続タスク。</returns>
         private async Task ReceiveAsync(SocketAsyncEventArgs socketAsyncEventArgs)
         {
-            if (!await Task.FromResult<bool>(socketAsyncEventArgs.AcceptSocket.ReceiveAsync(socketAsyncEventArgs)))
+            if (!await Task.FromResult<bool>(socketAsyncEventArgs.AcceptSocket.ReceiveAsync(socketAsyncEventArgs)).ConfigureAwait(false))
             {
                 Args_Completed(this, socketAsyncEventArgs);
             }
@@ -256,7 +256,7 @@ namespace AsyncServerLib
         /// <returns>継続タスク。</returns>
         private async Task SendAsync(SocketAsyncEventArgs socketAsyncEventArgs)
         {
-            if (!await Task.FromResult<bool>(socketAsyncEventArgs.AcceptSocket.SendAsync(socketAsyncEventArgs)))
+            if (!await Task.FromResult<bool>(socketAsyncEventArgs.AcceptSocket.SendAsync(socketAsyncEventArgs)).ConfigureAwait(false))
             {
                 Args_Completed(this, socketAsyncEventArgs);
             }
@@ -290,7 +290,7 @@ namespace AsyncServerLib
                     Interlocked.Decrement(ref clientCount_);
                     socketAsyncEventArgs.Completed -= Args_Completed;
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>

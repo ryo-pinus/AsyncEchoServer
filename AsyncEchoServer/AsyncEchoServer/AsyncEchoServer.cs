@@ -27,7 +27,7 @@ namespace AsyncEchoServer
         protected async override void OnStart(string[] args)
         {
             server_ = new AsyncServerLib.AsyncEchoServer();
-            await server_.Start(new IPEndPoint(IPAddress.Loopback, Properties.Settings.Default.Port));
+            await server_.Start(new IPEndPoint(IPAddress.Loopback, Properties.Settings.Default.Port)).ConfigureAwait(false);
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace AsyncServerLib
         /// <returns>継続タスク。</returns>
         public async Task Start(EndPoint endpoint)
         {
-            await server_.Start(endpoint);
+            await server_.Start(endpoint).ConfigureAwait(false);
         }
 
         /// <summary>
